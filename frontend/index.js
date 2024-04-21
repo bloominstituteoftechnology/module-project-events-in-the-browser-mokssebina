@@ -14,7 +14,7 @@ function moduleProject2() {
   footer.textContent = `© BLOOM INSTITUTE OF TECHNOLOGY ${currentYear}`
 
   let keys = { // To easily check `event.key` on keyboard events
-    space: ' ',
+    space: 'Space',
     up: 'ArrowUp',
     right: 'ArrowRight',
     down: 'ArrowDown',
@@ -37,6 +37,16 @@ function moduleProject2() {
       row.appendChild(square)
       square.addEventListener('click', () => {
         // 👉 TASK 2 - Use a click handler to target a square 👈
+        const selected = square.classList
+
+        if (selected[1] === 'targeted') {
+          null
+        } else {
+          const remove = document.querySelectorAll('.targeted')
+          remove[0].classList.remove('targeted')
+          selected.add('targeted')
+        }
+
       })
     }
   }
@@ -65,10 +75,76 @@ function moduleProject2() {
 
   document.addEventListener('keydown', evt => {
     // 👉 TASK 3 - Use the arrow keys to highlight a new square 👈
+    let targeted = document.querySelector('.targeted')
+    //console.log("targeted: ",targeted.previousElementSibling)
+
+    let up = evt.code === keys.up
+    let down = evt.code === keys.down
+    let left = evt.code === keys.left
+    let right = evt.code === keys.right
+    let space = evt.code === keys.space
+
+    let headerText = document.querySelector('.info')
+
+    let button = document.createElement('button')
+    button.textContent = 'Restart'
+    button.addEventListener('click', () => {
+      location.reload()
+    })
+
+
+    if (up) {
+      if (targeted.parentElement.previousElementSibling) {
+        let index = Array.from(targeted.parentElement.children).indexOf(targeted)
+        targeted.classList.remove('targeted')
+        targeted.parentElement.previousElementSibling.children[index].classList.add('targeted')
+      }
+    }
+    else if (down) {
+      if (targeted.parentElement.nextElementSibling) {
+        let index = Array.from(targeted.parentElement.children).indexOf(targeted)
+        targeted.classList.remove('targeted')
+        targeted.parentElement.nextElementSibling.children[index].classList.add('targeted')
+      }
+    }
+    else if (left) {
+      if (targeted.previousElementSibling) {
+        targeted.classList.remove('targeted')
+        targeted.previousElementSibling.classList.add('targeted')
+      }
+    }
+    else if (right) {
+      if (targeted.nextElementSibling) {
+        targeted.classList.remove('targeted')
+        targeted.nextElementSibling.classList.add('targeted')
+      }
+    }
 
     // 👉 TASK 4 - Use the space bar to exterminate a mosquito 👈
+    else if (space) {
+      let mosquito = targeted.firstChild
+      if (mosquito && mosquito.dataset.status === "alive") {
+        mosquito.dataset.status = 'dead'
+        targeted.style.backgroundColor = 'red'
+      }
 
-    // 👉 TASK 5 - End the game 👈
+      let allMosqiotos = document.querySelectorAll("[data-status=alive]")
+
+      console.log("all mosquitos: ", allMosqiotos)
+
+
+      // 👉 TASK 5 - End the game 👈
+
+      let time = getTimeElapsed()
+
+      if (!allMosqiotos.length) {
+        headerText.textContent = `Extermination completed in ${time / 1000} seconds!`
+        document.querySelector('h2').insertAdjacentElement('beforeend', button)
+      }
+
+    }
+
+
   })
   // 👆 WORK WORK ABOVE THIS LINE 👆
 }
